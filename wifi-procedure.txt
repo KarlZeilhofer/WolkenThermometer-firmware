@@ -1,0 +1,93 @@
+Notes on the WiFi configuration:
+
+communication: 9600 baud/s
+Linebreak: CR+LF
+
+
+To set up the WolkenThermometer, we have to tell the WiFi module the SSID and password of the host network. 
+
+Therfore we go into AP+STA mode:
+
+AT+CWMODE=3
+AT+CWSAP="test6","",1,0
+
+nun mit dem hany verbinden
+IP-adresse bekommen...
+
+für mehrere verbindungen konfigurieren:
+AT+CIPMUX=1
+
+TCP server aufmachen: 
+AT+CIPSERVER=1,8785
+
+udp-ausgangs-socket einstellen:
+AT+CIPSTART=1,"UDP","192.168.4.255",8784
+
+handy horcht auf UDP: 0.0.0.0:8784
+und bekommt vom WT die nachricht, auf TCP umzuschalten auf port 8785, und einen nachrichten seed
+AT+CIPSEND=1,<n>
+WTID=1234567890\nTCP-Port=8785\nseed=753379 (uint32_t)
+    (\n wird als trennzeichen verwendet)
+
+handy verbindet sich mit diesem TCP-Port und sendet die SSID und das Passwort. 
+
+
+Verschlüsselung überblick:
+    der verschlüsselungs-schlüssel wird generiert aus publickey, secret key und seed
+    ssid und passwort werden verschlüsselt. 
+    zusätzlich wird von der klartextnachrich noch ein hash-wert generiert, umd die 
+    gültigkeit der entschlüsselten daten festzustellen zu können. 
+    übertragen wird der hashwert und die verchlüsselte nachricht. 
+
+
+Verschlüsselung der Antwortnachricht:
+AES256-key =  secretkey . publickey . seed-as-decimal-string . binary-zero-pad-to-32-chars
+(256 bit = 32 byte)
+
+Klartext-Nachricht: 
+    "<secret-ssid>\n<secret-pwd>\n" . binary-zero-pad-to-multiple-of-16-chars
+    Beispiel: "MKZ\nasdf1234\n\0\0\0"
+Nachricht verschlüsseln
+Hash-Wert:
+    hash = sha1(secret-ssid . secret-pwd . seed-as-decimal-string)
+        (der hash benötigt kein direktes passwort wie secretKey, 
+        weil der aesKey ja schon damit gemacht wurde, und bei der 
+        überprüfung mit sicherheit ein fehler auftritt, wenn der
+        aes-schlüssel nicht stimmt)
+versendete nachricht (nur text):
+    "encoded-msg-as-hex-string&hash-as-hex-string&"
+    maximale länge: 
+        encoded-msg-as-hex-string: (30+1+30+1 + 2)*2 = 128bytes
+        &: 1
+        hash-as-hex-string: 40
+        &: 1
+        Summe: 170bytes!
+
+
+Entschlüsseln der Nachricht:
+    encoded-msg-as-hex-string und hash-as-hex-string extrahieren
+    schlüssel wie oben erstellen
+    in blöcken von 16bytes entschlüsseln
+    aus klartext ssid und passwort extrahieren
+    hash-wert
+hash wie oben berechnen, und mit mitgesendetem hash vergleichen. 
+    wenn gleich, dann geht es weiter. 
+    encoded-msg aus encoded-msg-as-hex-string erstellen und in puffer ablegen. 
+    AES256-key = trimTo256Bits(sha1(publickey . secretkey) . sha1(seed))
+    entschlüsseln der nachricht.
+    SSID = alles bis zum ersten \n
+    PWD = alles bis zum zweiten \n
+    Rest wird verworfen. 
+
+Wurden SSID und Passwort akzeptiert, sendet das WT an das Handy
+    '0' zurück. 
+    ansonsten '1'. 
+
+
+
+    
+Anmerkung: Punkt-Notation = zusammenstückeln. "asfd" . "jklo" wird zu "asdfjklo"
+
+
+
+
