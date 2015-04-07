@@ -57,8 +57,9 @@ void Idle_for(int16_t seconds)
 	sleep_disable();
 	//set_sleep_mode(SLEEP_MODE_PWR_SAVE);
 	set_sleep_mode(SLEEP_MODE_PWR_DOWN); 
-		// measured: 175-185uA from battery (3.4.2015)
+		// measured: 230uA from battery (3.4.2015)
 		// (remaining current sinks have to be identified...)
+		// no other devices connected (nor UART adapter, ...)
 	//Set sleep enable (SE) bit:
 	sleep_enable();
 

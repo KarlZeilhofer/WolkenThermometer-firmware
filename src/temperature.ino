@@ -150,7 +150,7 @@ char* Temp_toStr() // returns a pointer to a static string.
 	int16_t sign = 0;
 	int16_t absRaw = 0;
 	int16_t absGanzzahl = 0;
-	if(Temp_raw>0){
+	if(Temp_raw>=0){
 		sign = 1;
 		absRaw = Temp_raw;
 	}else{
@@ -162,7 +162,12 @@ char* Temp_toStr() // returns a pointer to a static string.
 	int16_t nachkomma100stel = absRaw%16;
 	nachkomma100stel = ((nachkomma100stel*1000)/16 + 5)/10; 
 
-	snprintf(Temp_str, 9, "%+d.%02u", absGanzzahl*sign, 
+	if(sign>0){
+		Temp_str[0]='+';
+	}else{
+		Temp_str[0]='-';		
+	}
+	snprintf(Temp_str+1, 8, "%d.%02u", absGanzzahl, 
 		(uint16_t)(nachkomma100stel));
 
 	return Temp_str;

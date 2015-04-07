@@ -58,8 +58,15 @@ void Volt_read()
 void Volt_toStr()
 {
 	int i = Volt_permill/10;
+	int absI = abs(i);
 	int d = abs(Volt_permill)%10;
-	snprintf(Volt_str, 9, "%d.%u", i, d); 
+	
+	if(Volt_permill>=0){
+		Volt_str[0]='+';
+	}else{
+		Volt_str[0]='-';
+	}
+	snprintf(Volt_str+1, 8, "%d.%u", absI, d); 
 	// 4.35V = 100%
 	// 3.2V = 0%
 }
