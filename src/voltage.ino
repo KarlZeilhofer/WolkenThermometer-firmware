@@ -48,11 +48,11 @@ void Volt_read()
 	int32_t zero_point_1_mV = ((int32_t)Volt_raw_times10*1000*5)/1024;
 
 	// x1 = 3.2V
-	// x2 = 4.35V
+	// x2 = 4.1V
 	// y1 = 0%
 	// y2 = 100%
-	// percent =((1000pm)/1150mV * (x-3200mV)) + 0
-	Volt_permill =  (1000*(zero_point_1_mV-32000))/11500 + 0;
+	// percent =((1000pm)/900mV * (x-3200mV)) + 0
+	Volt_permill =  (1000*(zero_point_1_mV-32000))/9000 + 0;
 }
 
 void Volt_toStr()
@@ -67,7 +67,7 @@ void Volt_toStr()
 		Volt_str[0]='-';
 	}
 	snprintf(Volt_str+1, 8, "%d.%u", absI, d); 
-	// 4.35V = 100%
+	// 4.1V = 100%
 	// 3.2V = 0%
 }
 
