@@ -18,7 +18,8 @@
 
 //     You should have received a copy of the GNU General Public License
 //     along with WolkenThermometer-firmware.  If not, see <http://www.gnu.org/licenses/>.
-
+#include <SoftwareSerial.h>
+#include <OneWire.h>
 
 #include "button.h"
 #include "helper.h"
