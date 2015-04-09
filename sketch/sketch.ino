@@ -36,7 +36,6 @@
 #include <string.h>
 #include <sha1.h>
 #include <aes256.h>
-#include <twi.h>
 
 
 #include "defs.h"
