@@ -50,55 +50,47 @@ void setup()
 #endif
 
 	myDebug(("\nProject: WolkenThermometer V1.0\n"));
+	myDebug(("Built on "));
+	myDebug(__DATE__);
+	myDebug("\n\n");
 
 	
 	Pins_init();
-	myDebug("A\n");
 	Timer_init_T1(); // sets up a 1Hz interrupt
-	myDebug("B\n");
 
 	if(Settings_areKeysConfigured()){
-		myDebug("C\n");
 		while(Button_isPressed()); // wait for release
-		myDebug("D\n");
 
 		
 		// TODO: change back the time limits to 5-10 and 20-30s
 		if(Button_PressedDuration >= 1 && Button_PressedDuration <=3){
-			myDebug("E\n");
 			Timer_blinkingLed = true; // blinking LED while configuring Wifi. 
 			WifiConfig_run(); 
 			Timer_blinkingLed = false;
 			Pins_enableLed(0); // disable LED
 		}else if(Button_PressedDuration >= 4 && Button_PressedDuration <=8){
-		myDebug("F\n");
 			Pins_enableLed(1);
 			SerialMenu_setup();
 			Pins_enableLed(0);
 		}
 	}
-	myDebug("G\n");
 	
 	if(Settings_areKeysConfigured() == false){
-		myDebug("H\n");
 		Pins_enableLed(1);
 		SerialMenu_setup();
 		Pins_enableLed(0);
 	}
 	if(Settings_isWifiConfigured() == false){
-		myDebug("H2\n");
 		//myDebug(str123);
 		myDebugP(PSTR("Wifi is not configured! Press button for 1-3 seconds,\nto enter Wifi-Config-Mode - Halt!")); // TODO: communicate this state with LED!
 		while(1); // TODO: show this state with LED!
 		// we must enter the wifi-config via the button, so we get a 
 		// randomized seed!
 	}
-	myDebug("I\n");
 
 	Pins_enableLed(true);
 	Temp_init();
 	Pins_enableLed(false);
-	myDebug("J\n");
 
 }
 
